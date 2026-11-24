@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 1dp black rule along the card's bottom edge. The insets match the CardView's compat
+     (shadow) padding, which the card clips to; the stroke's other sides sit outside it. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:bottom="5dp" android:left="-4dp" android:right="-4dp" android:top="-4dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <stroke android:width="1dp" android:color="@android:color/black" />
+        </shape>
+    </item>
+</layer-list>

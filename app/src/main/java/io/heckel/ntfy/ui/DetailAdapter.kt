@@ -155,6 +155,7 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
             } else {
                 cardView.setCardBackgroundColor(Colors.cardBackgroundColor(context))
             }
+            cardView.isActivated = selected.contains(notification.id) // lets themes style selection
             val attachment = notification.attachment
             val attachmentFileStat = maybeFileStat(context, attachment?.contentUri)
             val iconFileStat = maybeFileStat(context, notification.icon?.contentUri)
