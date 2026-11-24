@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- E Ink: flat message cards; shadows render as gray smudges -->
+    <dimen name="detail_card_elevation">0dp</dimen>
+</resources>

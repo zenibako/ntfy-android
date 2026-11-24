@@ -142,7 +142,8 @@
     <color name="md_theme_surfaceContainer_highContrast">#FFFFFFFF</color>
     <color name="md_theme_surfaceContainerHigh_highContrast">#FFFFFFFF</color>
     <color name="md_theme_surfaceContainerHighest_highContrast">#FFFFFFFF</color>
-    <color name="detail_activity_background">#FFFFFFFF</color>
+    <color name="action_bar">#FF000000</color>
+    <color name="detail_activity_background">#FFE4E4E4</color>
     <color name="chip_background_color">#FFFFFFFF</color>
     <color name="chip_background_checked">#FFCCCCCC</color>
 </resources>

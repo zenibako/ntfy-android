@@ -140,11 +140,20 @@ class NotificationService(val context: Context) {
             putExtra(MainActivity.EXTRA_SUBSCRIPTION_MUTED_UNTIL, subscription.mutedUntil)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
+        // Android 14+ blocks the launch unless the creator opts in to background activity starts
+        val options = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            ActivityOptions.makeBasic()
+                .setPendingIntentCreatorBackgroundActivityStartMode(ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED)
+                .toBundle()
+        } else {
+            null
+        }
         val pendingIntent = PendingIntent.getActivity(
             context,
             notification.notificationId,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            options
         )
         builder
             .setCategory(NotificationCompat.CATEGORY_ALARM)
