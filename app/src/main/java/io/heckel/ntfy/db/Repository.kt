@@ -12,6 +12,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
+import io.heckel.ntfy.BuildConfig
 import io.heckel.ntfy.msg.ApiService
 import io.heckel.ntfy.util.Log
 import io.heckel.ntfy.util.validUrl
@@ -341,6 +342,7 @@ class Repository(private val sharedPrefs: SharedPreferences, database: Database)
     }
 
     fun getDarkMode(): Int {
+        if (BuildConfig.E_INK) return AppCompatDelegate.MODE_NIGHT_NO // E Ink has no dark mode
         return sharedPrefs.getInt(SHARED_PREFS_DARK_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     }
 
@@ -351,6 +353,7 @@ class Repository(private val sharedPrefs: SharedPreferences, database: Database)
     }
 
     fun getDynamicColorsEnabled(): Boolean {
+        if (BuildConfig.E_INK) return false // Wallpaper-based colors would undo the black-and-white theme
         return sharedPrefs.getBoolean(SHARED_PREFS_DYNAMIC_COLORS, false)
     }
 

@@ -74,6 +74,7 @@ android {
     }
     productFlavors.configureEach { flavor ->
         flavor.buildConfigField 'boolean', 'FULL_SCREEN_MAX_PRIORITY', flavor.name == 'kompakt' ? 'true' : 'false'
+        flavor.buildConfigField 'boolean', 'E_INK', flavor.name == 'kompakt' ? 'true' : 'false'
     }
 
     sourceSets {

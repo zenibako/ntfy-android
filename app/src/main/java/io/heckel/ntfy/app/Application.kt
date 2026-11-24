@@ -3,7 +3,9 @@ package io.heckel.ntfy.app
 import android.app.Application
 import android.net.ConnectivityManager
 import android.net.Network
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
+import io.heckel.ntfy.BuildConfig
 import io.heckel.ntfy.db.Repository
 import io.heckel.ntfy.service.SubscriberServiceManager
 import io.heckel.ntfy.util.Log
@@ -25,6 +27,10 @@ class Application : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        if (BuildConfig.E_INK) {
+            // Apply light mode before any screen opens, including ones opened from a notification
+            AppCompatDelegate.setDefaultNightMode(repository.getDarkMode())
+        }
         if (repository.getDynamicColorsEnabled()) {
             DynamicColors.applyToActivitiesIfAvailable(this)
         }
