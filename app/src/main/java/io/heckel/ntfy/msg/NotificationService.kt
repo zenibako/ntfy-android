@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import io.heckel.ntfy.BuildConfig
 import io.heckel.ntfy.R
 import io.heckel.ntfy.db.*
 import io.heckel.ntfy.db.Notification
@@ -105,12 +106,50 @@ class NotificationService(val context: Context) {
         maybeAddDownloadAction(builder, notification)
         maybeAddCancelAction(builder, notification)
         maybeAddUserActions(builder, notification)
+        maybeSetFullScreenAlert(builder, subscription, notification, title, update)
 
         maybeCreateNotificationGroup(groupId, subscriptionGroupName(subscription))
         maybeCreateNotificationChannel(groupId, notification.priority)
         maybePlayInsistentSound(groupId, insistent)
 
         notificationManager.notify(notification.notificationId, builder.build())
+    }
+
+    /**
+     * Kompakt (E Ink) flavor only: max-priority messages also open a full-screen, alarm-style
+     * alert, so they are seen on phones without a usable notification shade. The activity
+     * lives in the kompakt source set, hence the class name lookup.
+     */
+    private fun maybeSetFullScreenAlert(
+        builder: NotificationCompat.Builder,
+        subscription: Subscription,
+        notification: Notification,
+        title: String,
+        update: Boolean
+    ) {
+        if (!BuildConfig.FULL_SCREEN_MAX_PRIORITY || update || notification.priority != PRIORITY_MAX) return
+        val intent = Intent().apply {
+            setClassName(context, "io.heckel.ntfy.ui.MaxPriorityAlertActivity")
+            putExtra("io.heckel.ntfy.kompakt.ALERT_TITLE", title)
+            putExtra("io.heckel.ntfy.kompakt.ALERT_MESSAGE", notification.message)
+            putExtra(MainActivity.EXTRA_SUBSCRIPTION_ID, subscription.id)
+            putExtra(MainActivity.EXTRA_SUBSCRIPTION_BASE_URL, subscription.baseUrl)
+            putExtra(MainActivity.EXTRA_SUBSCRIPTION_TOPIC, subscription.topic)
+            putExtra(MainActivity.EXTRA_SUBSCRIPTION_DISPLAY_NAME, displayName(appBaseUrl, subscription))
+            putExtra(MainActivity.EXTRA_SUBSCRIPTION_INSTANT, subscription.instant)
+            putExtra(MainActivity.EXTRA_SUBSCRIPTION_MUTED_UNTIL, subscription.mutedUntil)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            notification.notificationId,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        builder
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setFullScreenIntent(pendingIntent, true)
     }
 
     private fun maybeSetDeleteIntent(builder: NotificationCompat.Builder, insistent: Boolean) {

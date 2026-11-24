@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">ntfy Kompakt</string>
+    <string name="kompakt_app_name" translatable="false">ntfy Kompakt</string>
+    <string name="kompakt_alert_label">Urgent</string>
+    <string name="kompakt_alert_open">Open</string>
+    <string name="kompakt_alert_dismiss">Dismiss</string>
+</resources>

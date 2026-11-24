@@ -62,6 +62,22 @@ android {
             buildConfigField 'boolean', 'RATE_APP_AVAILABLE', 'false'
             buildConfigField 'boolean', 'PAYMENT_LINKS_AVAILABLE', 'true'
         }
+        // F-Droid build for E Ink phones (Mudita Kompakt): monochrome MMD-style theme and a
+        // full-screen alert for max priority. Installs next to regular ntfy.
+        kompakt {
+            applicationIdSuffix ".kompakt"
+            versionNameSuffix "-kompakt"
+            buildConfigField 'boolean', 'FIREBASE_AVAILABLE', 'false'
+            buildConfigField 'boolean', 'RATE_APP_AVAILABLE', 'false'
+            buildConfigField 'boolean', 'PAYMENT_LINKS_AVAILABLE', 'true'
+        }
+    }
+    productFlavors.configureEach { flavor ->
+        flavor.buildConfigField 'boolean', 'FULL_SCREEN_MAX_PRIORITY', flavor.name == 'kompakt' ? 'true' : 'false'
+    }
+
+    sourceSets {
+        kompakt.java.srcDirs += 'src/fdroid/java' // Reuse the no-op Firebase stubs
     }
 
     compileOptions {
