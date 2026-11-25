@@ -5,4 +5,6 @@
     <string name="kompakt_alert_label">Urgent</string>
     <string name="kompakt_alert_open">Open</string>
     <string name="kompakt_alert_dismiss">Dismiss</string>
+    <!-- Message bar hint, as in the Messages app -->
+    <string name="eink_message_bar_hint">Message</string>
 </resources>
