@@ -90,6 +90,112 @@
         <item name="materialCardViewStyle">@style/CardView</item>
         <!-- E Ink: Messages-style top bar, bold title (colors come from Colors) -->
         <item name="toolbarStyle">@style/EInkToolbar</item>
+
+        <!-- E Ink: outlined menus without shadow, Messages-style text -->
+        <item name="popupMenuStyle">@style/EInkPopupMenu</item>
+        <item name="android:popupMenuStyle">@style/EInkPopupMenu</item>
+        <item name="actionOverflowMenuStyle">@style/EInkPopupMenu.Overflow</item>
+        <item name="android:actionOverflowMenuStyle">@style/EInkPopupMenu.Overflow</item>
+        <item name="listPopupWindowStyle">@style/EInkPopupMenu.ListPopupWindow</item>
+        <item name="android:listPopupWindowStyle">@style/EInkPopupMenu.ListPopupWindow</item>
+        <item name="textAppearanceLargePopupMenu">@style/TextAppearance.EInk.BodyLarge</item>
+        <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.EInk.BodyLarge</item>
+        <item name="android:textAppearanceLargePopupMenu">@style/TextAppearance.EInk.BodyLarge</item>
+        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.EInk.BodyLarge</item>
+
+        <!-- E Ink: Settings with bold section headers and dashed, inset dividers -->
+        <item name="preferenceTheme">@style/EInkPreferenceTheme</item>
+    </style>
+
+    <!-- Selection (action mode) bar: white with a thick rule, black title and icons -->
+    <style name="ActionMode" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@drawable/eink_action_mode_background</item>
+        <item name="titleTextStyle">@style/ActionModeTitle</item>
+    </style>
+
+    <style name="ActionModeTitle" parent="@style/TextAppearance.AppCompat.Widget.ActionMode.Title">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ActionModeCloseButtonStyle" parent="Widget.AppCompat.ActionButton.CloseMode">
+        <item name="android:tint">@android:color/black</item>
+    </style>
+
+    <style name="EInkPopupMenu" parent="Widget.Material3.PopupMenu">
+        <item name="android:popupBackground">@drawable/eink_popup_background</item>
+        <item name="android:popupElevation">0dp</item>
+        <item name="android:popupEnterTransition">@null</item>
+        <item name="android:popupExitTransition">@null</item>
+        <item name="android:popupAnimationStyle">@null</item>
+    </style>
+    <style name="EInkPopupMenu.Overflow" parent="Widget.Material3.PopupMenu.Overflow">
+        <item name="android:popupBackground">@drawable/eink_popup_background</item>
+        <item name="android:popupElevation">0dp</item>
+        <item name="android:popupEnterTransition">@null</item>
+        <item name="android:popupExitTransition">@null</item>
+        <item name="android:popupAnimationStyle">@null</item>
+    </style>
+    <style name="EInkPopupMenu.ListPopupWindow" parent="Widget.Material3.PopupMenu.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/eink_popup_background</item>
+        <item name="android:popupElevation">0dp</item>
+        <item name="android:popupEnterTransition">@null</item>
+        <item name="android:popupExitTransition">@null</item>
+        <item name="android:popupAnimationStyle">@null</item>
+    </style>
+
+    <style name="EInkPreferenceTheme" parent="PreferenceThemeOverlay">
+        <item name="preferenceCategoryTitleTextAppearance">@style/TextAppearance.EInk.PreferenceCategory</item>
+        <item name="preferenceFragmentCompatStyle">@style/EInkPreferenceFragment</item>
+        <!-- Rows start at the text inset (no icon column) and allow dividers between them;
+             Material's preference styles only draw one above each category -->
+        <item name="preferenceStyle">@style/EInkPreference</item>
+        <item name="preferenceScreenStyle">@style/EInkPreference.Screen</item>
+        <item name="dialogPreferenceStyle">@style/EInkPreference.Dialog</item>
+        <item name="editTextPreferenceStyle">@style/EInkPreference.EditText</item>
+        <item name="preferenceCategoryStyle">@style/EInkPreference.Category</item>
+    </style>
+    <style name="EInkPreference" parent="Preference.Material">
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">true</item>
+        <item name="allowDividerBelow">true</item>
+    </style>
+    <style name="EInkPreference.Screen" parent="Preference.PreferenceScreen.Material">
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">true</item>
+        <item name="allowDividerBelow">true</item>
+    </style>
+    <style name="EInkPreference.Dialog" parent="Preference.DialogPreference.Material">
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">true</item>
+        <item name="allowDividerBelow">true</item>
+    </style>
+    <style name="EInkPreference.EditText" parent="Preference.DialogPreference.EditTextPreference.Material">
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">true</item>
+        <item name="allowDividerBelow">true</item>
+    </style>
+    <!-- Replaces main's MaterialSwitch: AppTheme sets switchPreferenceCompatStyle itself, which
+         the preference theme overlay does not override -->
+    <style name="MaterialSwitch" parent="@style/Preference.SwitchPreferenceCompat.Material">
+        <item name="widgetLayout">@layout/view_preference_switch</item>
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">true</item>
+        <item name="allowDividerBelow">true</item>
+    </style>
+    <style name="EInkPreference.Category" parent="Preference.Category.Material">
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
+    <style name="EInkPreferenceFragment" parent="PreferenceFragment.Material">
+        <item name="android:divider">@drawable/eink_preference_divider</item>
+        <item name="android:dividerHeight">2dp</item>
+        <item name="allowDividerAfterLastItem">false</item>
+    </style>
+    <style name="TextAppearance.EInk.PreferenceCategory" parent="TextAppearance.EInk.TitleSmall">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/black</item>
     </style>
 
     <style name="EInkToolbar" parent="Widget.Material3.Toolbar">
