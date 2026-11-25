@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.stfalcon.imageviewer.StfalconImageViewer
+import io.heckel.ntfy.BuildConfig
 import io.heckel.ntfy.R
 import io.heckel.ntfy.db.*
 import io.heckel.ntfy.msg.DownloadAttachmentWorker
@@ -35,6 +36,8 @@ import io.heckel.ntfy.msg.NotificationService
 import io.heckel.ntfy.msg.NotificationService.Companion.ACTION_COPY
 import io.heckel.ntfy.msg.NotificationService.Companion.ACTION_VIEW
 import io.heckel.ntfy.util.*
+import java.text.DateFormat
+import java.util.Date
 import io.noties.markwon.Markwon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +60,23 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
 
     /* Gets current topic and uses it to bind view. */
     override fun onBindViewHolder(holder: DetailViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val notification = getItem(position)
+        // E Ink: "• 23 Nov •" above the newest message of each day (the list is newest first)
+        val day = if (BuildConfig.E_INK) {
+            val thisDay = formatDay(Date(notification.timestamp * 1000))
+            val newerDay = if (position > 0) formatDay(Date(getItem(position - 1).timestamp * 1000)) else null
+            if (thisDay != newerDay) thisDay else null
+        } else {
+            null
+        }
+        holder.bind(notification, day)
+    }
+
+    override fun onCurrentListChanged(previousList: List<Notification>, currentList: List<Notification>) {
+        // E Ink: a message's day marker depends on its neighbour, which DiffUtil doesn't rebind
+        if (BuildConfig.E_INK && previousList.isNotEmpty()) {
+            notifyItemRangeChanged(0, currentList.size)
+        }
     }
 
     fun get(position: Int): Notification {
@@ -95,6 +114,7 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
         private val cardView: CardView = itemView.findViewById(R.id.detail_item_card)
         private val priorityImageView: ImageView = itemView.findViewById(R.id.detail_item_priority_image)
         private val dateView: TextView = itemView.findViewById(R.id.detail_item_date_text)
+        private val dayView: TextView? = itemView.findViewById(R.id.detail_item_day) // E Ink layout only
         private val titleView: TextView = itemView.findViewById(R.id.detail_item_title_text)
         private val messageView: TextView = itemView.findViewById(R.id.detail_item_message_text)
         private val iconView: ImageView = itemView.findViewById(R.id.detail_item_icon)
@@ -108,14 +128,23 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
         private val actionsWrapperView: ConstraintLayout = itemView.findViewById(R.id.detail_item_actions_wrapper)
         private val actionsFlow: Flow = itemView.findViewById(R.id.detail_item_actions_flow)
 
-        fun bind(notification: Notification) {
+        fun bind(notification: Notification, day: String? = null) {
             this.notification = notification
 
             val context = itemView.context
             val unmatchedTags = unmatchedTags(splitTags(notification.tags))
             val message = maybeAppendActionErrors(formatMessage(notification), notification)
 
-            dateView.text = formatDateShort(notification.timestamp)
+            if (BuildConfig.E_INK) {
+                // The day is in the "• 23 Nov •" marker, so only the time goes under the message
+                dateView.text = DateFormat.getTimeInstance(DateFormat.SHORT).format(Date(notification.timestamp * 1000))
+                dayView?.let {
+                    it.text = if (day != null) "•  $day  •" else ""
+                    it.visibility = if (day != null) View.VISIBLE else View.GONE
+                }
+            } else {
+                dateView.text = formatDateShort(notification.timestamp)
+            }
             if (notification.isMarkdown()) {
                 messageView.autoLinkMask = 0
                 markwon.setMarkdown(messageView, message.toString())

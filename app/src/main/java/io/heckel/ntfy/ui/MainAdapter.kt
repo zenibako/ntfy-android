@@ -17,6 +17,7 @@ import io.heckel.ntfy.db.ConnectionState
 import io.heckel.ntfy.db.Repository
 import io.heckel.ntfy.db.Subscription
 import io.heckel.ntfy.util.displayName
+import io.heckel.ntfy.util.formatDay
 import io.heckel.ntfy.util.readBitmapFromUriOrNull
 import java.text.DateFormat
 import java.util.*
@@ -103,6 +104,8 @@ class MainAdapter(
                 ""
             } else if (sameDay) {
                 DateFormat.getTimeInstance(DateFormat.SHORT).format(date)
+            } else if (BuildConfig.E_INK) {
+                formatDay(date) // Like the Messages app: "23 Nov"
             } else if (!moreThanOneDay) {
                 context.getString(R.string.main_item_date_yesterday)
             } else {
@@ -135,6 +138,7 @@ class MainAdapter(
             }
             itemView.setOnClickListener { onClick(subscription) }
             itemView.setOnLongClickListener { onLongClick(subscription); true }
+            itemView.isActivated = selected.contains(subscription.id) // lets themes style selection
             if (selected.contains(subscription.id)) {
                 itemView.setBackgroundColor(Colors.itemSelectedBackground(context))
             } else {

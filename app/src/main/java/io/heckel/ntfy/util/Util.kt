@@ -49,8 +49,10 @@ import java.io.IOException
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.text.StringCharacterIterator
 import java.util.Date
+import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import androidx.core.net.toUri
@@ -134,6 +136,11 @@ fun normalizeBaseUrl(url: String): String {
 fun formatDateShort(timestampSecs: Long): String {
     val date = Date(timestampSecs*1000)
     return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date)
+}
+
+/** Day and month only, e.g. "23 Nov", as the Kompakt's Messages app shows older dates. */
+fun formatDay(date: Date): String {
+    return SimpleDateFormat("dd MMM", Locale.getDefault()).format(date)
 }
 
 fun toPriority(priority: Int?): Int {

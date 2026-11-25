@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- E Ink message card foreground: a 1dp black rule below each card, like MMD's
-     HorizontalDividerMMD; a selected (activated) card gets a 3dp black outline instead
-     of a grey fill. -->
+<!-- E Ink message card foreground: an outlined bubble (eink_bubble); a selected (activated)
+     card gets a 3dp outline instead of a grey fill. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/eink_card_selected" android:state_activated="true" />
-    <item android:drawable="@drawable/eink_card_rule" />
+    <item android:drawable="@drawable/eink_bubble_selected" android:state_activated="true" />
+    <item android:drawable="@drawable/eink_bubble" />
 </selector>

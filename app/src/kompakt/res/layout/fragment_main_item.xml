@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- E Ink topic row, like a conversation in the Kompakt's Messages app: bold name on one line
+     with the time at the right, one status line under it, a dashed rule below. Same view IDs
+     as main's layout; the topic icon is hidden. Selection draws an outline (foreground). -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="@drawable/eink_row_foreground"
+    android:paddingStart="@dimen/eink_row_inset_start"
+    android:paddingEnd="@dimen/eink_row_inset_end">
+
+    <ImageView
+        android:id="@+id/main_item_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/main_item_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="ntfy.sh/example"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/main_item_connection_error_image"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/main_item_connection_error_image"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/main_item_text"
+        app:layout_constraintEnd_toStartOf="@id/main_item_notification_disabled_until_image"
+        app:layout_constraintTop_toTopOf="@id/main_item_text"
+        app:srcCompat="@drawable/ic_warning_amber_24dp"
+        app:tint="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/main_item_notification_disabled_until_image"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="3dp"
+        app:layout_constraintBottom_toBottomOf="@id/main_item_text"
+        app:layout_constraintEnd_toStartOf="@id/main_item_notification_disabled_forever_image"
+        app:layout_constraintTop_toTopOf="@id/main_item_text"
+        app:srcCompat="@drawable/ic_notifications_off_time_gray_outline_24dp"
+        app:tint="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/main_item_notification_disabled_forever_image"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="3dp"
+        app:layout_constraintBottom_toBottomOf="@id/main_item_text"
+        app:layout_constraintEnd_toStartOf="@id/main_item_instant_image"
+        app:layout_constraintTop_toTopOf="@id/main_item_text"
+        app:srcCompat="@drawable/ic_notifications_off_gray_outline_24dp"
+        app:tint="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/main_item_instant_image"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="3dp"
+        app:layout_constraintBottom_toBottomOf="@id/main_item_text"
+        app:layout_constraintEnd_toStartOf="@id/main_item_date"
+        app:layout_constraintTop_toTopOf="@id/main_item_text"
+        app:srcCompat="@drawable/ic_bolt_gray_24dp"
+        app:tint="@android:color/black" />
+
+    <TextView
+        android:id="@+id/main_item_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="10:13"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        app:layout_constraintBaseline_toBaselineOf="@id/main_item_text"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/main_item_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="89 notifications"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        app:layout_constraintBottom_toTopOf="@id/main_item_divider"
+        app:layout_constraintEnd_toStartOf="@id/main_item_new"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main_item_text" />
+
+    <TextView
+        android:id="@+id/main_item_new"
+        android:layout_width="wrap_content"
+        android:layout_height="22dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/ic_circle"
+        android:gravity="center"
+        android:minWidth="22dp"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:text="99+"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/main_item_status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/main_item_status" />
+
+    <!-- Software layer: hardware rendering draws dashed line shapes solid -->
+    <View
+        android:id="@+id/main_item_divider"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:background="@drawable/eink_row_divider"
+        android:layerType="software"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -940,7 +940,7 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
         const val EXTRA_SUBSCRIPTION_DISPLAY_NAME = "subscriptionDisplayName"
         const val EXTRA_SUBSCRIPTION_INSTANT = "subscriptionInstant"
         const val EXTRA_SUBSCRIPTION_MUTED_UNTIL = "subscriptionMutedUntil"
-        const val ANIMATION_DURATION = 80L
+        val ANIMATION_DURATION = if (BuildConfig.E_INK) 0L else 80L // E Ink: no fades
         const val ONE_DAY_MILLIS = 86400000L
 
         // As per documentation: The minimum repeat interval that can be defined is 15 minutes
