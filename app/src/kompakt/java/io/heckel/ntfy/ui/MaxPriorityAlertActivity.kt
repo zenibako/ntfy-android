@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import io.heckel.ntfy.R
@@ -38,6 +39,8 @@ class MaxPriorityAlertActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         render()
+        // A replacement alert starts at the top of its own message
+        findViewById<ScrollView>(R.id.alert_scroll).scrollTo(0, 0)
     }
 
     private fun render() {

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- E Ink: no ripples. Overrides Material's ripple color of the same name. -->
+<!-- E Ink: no ripples. Overrides Material's ripple color of the same name.
+     Focus keeps a static overlay so keyboard focus stays visible. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@android:color/transparent" android:state_pressed="true" />
+    <item android:color="@color/kompakt_focus_overlay" android:state_focused="true" />
     <item android:color="@android:color/transparent" />
 </selector>

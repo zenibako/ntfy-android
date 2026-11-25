@@ -358,7 +358,8 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
                 override fun putString(key: String?, value: String?) {
                     val darkModeValue = value?.toIntOrNull() ?: return
                     repository.setDarkMode(darkModeValue)
-                    AppCompatDelegate.setDefaultNightMode(darkModeValue)
+                    // Apply the effective mode (E Ink builds always stay light)
+                    AppCompatDelegate.setDefaultNightMode(repository.getDarkMode())
 
                 }
                 override fun getString(key: String?, defValue: String?): String {

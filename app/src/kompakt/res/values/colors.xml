@@ -146,4 +146,6 @@
     <color name="detail_activity_background">#FFFFFFFF</color>
     <color name="chip_background_color">#FFFFFFFF</color>
     <color name="chip_background_checked">#FFCCCCCC</color>
+    <!-- Static (non-animated) overlay for keyboard focus; ripples stay off on E Ink -->
+    <color name="kompakt_focus_overlay">#52000000</color>
 </resources>
