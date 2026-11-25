@@ -37,6 +37,9 @@ import io.heckel.ntfy.msg.NotificationService.Companion.ACTION_COPY
 import io.heckel.ntfy.msg.NotificationService.Companion.ACTION_VIEW
 import io.heckel.ntfy.util.*
 import java.text.DateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Date
 import io.noties.markwon.Markwon
 import kotlinx.coroutines.CoroutineScope
@@ -63,14 +66,18 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
         val notification = getItem(position)
         // E Ink: "• 23 Nov •" above the newest message of each day (the list is newest first)
         val day = if (BuildConfig.E_INK) {
-            val thisDay = formatDay(Date(notification.timestamp * 1000))
-            val newerDay = if (position > 0) formatDay(Date(getItem(position - 1).timestamp * 1000)) else null
-            if (thisDay != newerDay) thisDay else null
+            val thisDay = localDate(notification.timestamp)
+            val newerDay = if (position > 0) localDate(getItem(position - 1).timestamp) else null
+            if (thisDay != newerDay) formatDay(Date(notification.timestamp * 1000)) else null
         } else {
             null
         }
         holder.bind(notification, day)
     }
+
+    /** Calendar date in the device's time zone, so the same day in different years differs. */
+    private fun localDate(timestampSecs: Long): LocalDate =
+        Instant.ofEpochSecond(timestampSecs).atZone(ZoneId.systemDefault()).toLocalDate()
 
     override fun onCurrentListChanged(previousList: List<Notification>, currentList: List<Notification>) {
         // E Ink: a message's day marker depends on its neighbour, which DiffUtil doesn't rebind

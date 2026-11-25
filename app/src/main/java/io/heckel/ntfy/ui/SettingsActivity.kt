@@ -366,9 +366,8 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
                     return repository.getDarkMode().toString()
                 }
             }
-            darkMode?.summaryProvider = Preference.SummaryProvider<ListPreference> { pref ->
-                val darkModeValue = pref.value.toIntOrNull() ?: repository.getDarkMode()
-                when (darkModeValue) {
+            darkMode?.summaryProvider = Preference.SummaryProvider<ListPreference> { _ ->
+                when (repository.getDarkMode()) { // The mode in effect, which E Ink pins to light
                     AppCompatDelegate.MODE_NIGHT_NO -> getString(R.string.settings_general_dark_mode_summary_light)
                     AppCompatDelegate.MODE_NIGHT_YES -> getString(R.string.settings_general_dark_mode_summary_dark)
                     else -> getString(R.string.settings_general_dark_mode_summary_system)

@@ -48,21 +48,24 @@ class MaxPriorityAlertActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.alert_message).text = intent.getStringExtra(EXTRA_MESSAGE).orEmpty()
     }
 
+    // Built when it is started, from the current intent: a newer alert may have replaced this
+    // one (onNewIntent) while the unlock prompt was showing.
+    private fun buildDetailIntent() = Intent(this, DetailActivity::class.java).apply {
+        intent.extras?.let { putExtras(it) }
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+
     private fun open() {
-        val detail = Intent(this, DetailActivity::class.java).apply {
-            intent.extras?.let { putExtras(it) }
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
         val keyguard = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && keyguard.isKeyguardLocked) {
             keyguard.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
                 override fun onDismissSucceeded() {
-                    startActivity(detail)
+                    startActivity(buildDetailIntent())
                     finish()
                 }
             })
         } else {
-            startActivity(detail)
+            startActivity(buildDetailIntent())
             finish()
         }
     }
