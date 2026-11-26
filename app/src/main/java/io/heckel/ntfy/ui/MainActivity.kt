@@ -858,6 +858,21 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
     private fun onMultiDeleteClick() {
         Log.d(DetailActivity.TAG, "Showing multi-delete dialog for selected items")
 
+        if (BuildConfig.E_INK) {
+            // E Ink: the stock confirm sheet (filled action, outlined Cancel, no dim)
+            EInkSheet.confirm(
+                this,
+                question = getString(R.string.main_action_mode_delete_dialog_message),
+                actionLabel = getString(R.string.main_action_mode_delete_dialog_permanently_delete),
+                cancelLabel = getString(R.string.main_action_mode_delete_dialog_cancel),
+                onConfirm = {
+                    adapter.selected.map { subscriptionId -> viewModel.remove(this, subscriptionId) }
+                    finishActionMode()
+                },
+                onCancel = { finishActionMode() },
+            )
+            return
+        }
         val dialog = MaterialAlertDialogBuilder(this)
             .setMessage(R.string.main_action_mode_delete_dialog_message)
             .setPositiveButton(R.string.main_action_mode_delete_dialog_permanently_delete) { _, _ ->

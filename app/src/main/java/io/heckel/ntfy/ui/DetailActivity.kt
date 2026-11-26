@@ -531,7 +531,7 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
     private val dateChangeWatcher by lazy { DateChangeWatcher(this) { redrawDays() } }
 
     private fun redrawDays() {
-        if (this::adapter.isInitialized) adapter.notifyItemRangeChanged(0, adapter.currentList.size)
+        if (this::adapter.isInitialized) adapter.refreshDayMarkers()
     }
 
     override fun onResume() {
@@ -905,6 +905,21 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
     private fun onClearClick() {
         Log.d(TAG, "Clearing all notifications for ${topicShortUrl(subscriptionBaseUrl, subscriptionTopic)}")
 
+        if (BuildConfig.E_INK) {
+            // E Ink: the stock confirm sheet (filled action, outlined Cancel, no dim)
+            EInkSheet.confirm(
+                this,
+                question = getString(R.string.detail_clear_dialog_message),
+                actionLabel = getString(R.string.detail_clear_dialog_permanently_delete),
+                cancelLabel = getString(R.string.detail_clear_dialog_cancel),
+                onConfirm = {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        repository.markAllAsDeleted(subscriptionId)
+                    }
+                },
+            )
+            return
+        }
         val dialog = MaterialAlertDialogBuilder(this)
             .setMessage(R.string.detail_clear_dialog_message)
             .setPositiveButton(R.string.detail_clear_dialog_permanently_delete) { _, _ ->
@@ -936,6 +951,27 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
     private fun onDeleteClick() {
         Log.d(TAG, "Deleting subscription ${topicShortUrl(subscriptionBaseUrl, subscriptionTopic)}")
 
+        if (BuildConfig.E_INK) {
+            // E Ink: the stock confirm sheet (filled action, outlined Cancel, no dim)
+            EInkSheet.confirm(
+                this,
+                question = getString(R.string.detail_delete_dialog_message),
+                actionLabel = getString(R.string.detail_delete_dialog_permanently_delete),
+                cancelLabel = getString(R.string.detail_delete_dialog_cancel),
+                onConfirm = {
+                    Log.d(TAG, "Deleting subscription with subscription ID $subscriptionId (topic: $subscriptionTopic)")
+                    GlobalScope.launch(Dispatchers.IO) {
+                        val subscription = repository.getSubscription(subscriptionId) ?: return@launch
+                        repository.removeSubscription(subscription)
+                        if (subscriptionBaseUrl == appBaseUrl) {
+                            messenger.unsubscribe(subscriptionTopic)
+                        }
+                    }
+                    finish()
+                },
+            )
+            return
+        }
         val dialog = MaterialAlertDialogBuilder(this)
             .setMessage(R.string.detail_delete_dialog_message)
             .setPositiveButton(R.string.detail_delete_dialog_permanently_delete) { _, _ ->
@@ -1013,6 +1049,21 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
     private fun onMultiDeleteClick() {
         Log.d(TAG, "Showing multi-delete dialog for selected items")
 
+        if (BuildConfig.E_INK) {
+            // E Ink: the stock confirm sheet (filled action, outlined Cancel, no dim)
+            EInkSheet.confirm(
+                this,
+                question = getString(R.string.detail_action_mode_delete_dialog_message),
+                actionLabel = getString(R.string.detail_action_mode_delete_dialog_permanently_delete),
+                cancelLabel = getString(R.string.detail_action_mode_delete_dialog_cancel),
+                onConfirm = {
+                    adapter.selected.map { notificationId -> viewModel.markAsDeleted(notificationId) }
+                    finishActionMode()
+                },
+                onCancel = { finishActionMode() },
+            )
+            return
+        }
         val dialog = MaterialAlertDialogBuilder(this)
             .setMessage(R.string.detail_action_mode_delete_dialog_message)
             .setPositiveButton(R.string.detail_action_mode_delete_dialog_permanently_delete) { _, _ ->

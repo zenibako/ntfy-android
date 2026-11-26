@@ -866,6 +866,11 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
             } else {
                 getString(R.string.settings_advanced_export_logs_scrub_dialog_empty)
             }
+            if (BuildConfig.E_INK) {
+                // E Ink: an information sheet instead of a dimmed dialog
+                EInkSheet.info(requireContext(), title, scrubbedText, getString(R.string.settings_advanced_export_logs_scrub_dialog_button_ok))
+                return
+            }
             val dialog = MaterialAlertDialogBuilder(requireContext())
                 .setTitle(title)
                 .setMessage(scrubbedText)

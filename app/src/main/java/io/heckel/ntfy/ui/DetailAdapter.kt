@@ -64,17 +64,32 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
 
     /* Gets current topic and uses it to bind view. */
     override fun onBindViewHolder(holder: DetailViewHolder, position: Int) {
-        val notification = getItem(position)
-        // E Ink: "• Today •" / "• Yesterday •" / "• 23 Nov •" above the newest message of each
-        // day (the list is newest first)
-        val day = if (BuildConfig.E_INK) {
-            val thisDay = localDate(notification.timestamp)
-            val newerDay = if (position > 0) localDate(getItem(position - 1).timestamp) else null
-            if (thisDay != newerDay) dayMarkerLabel(thisDay, LocalDate.now(), Locale.getDefault(), systemDayNames()) else null
+        holder.bind(getItem(position), dayMarkerFor(position))
+    }
+
+    // A day-marker-only update (see DAY_MARKER) skips the full bind: no markdown, bitmaps or menus.
+    override fun onBindViewHolder(holder: DetailViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isNotEmpty() && payloads.all { it == DAY_MARKER }) {
+            holder.bindDay(dayMarkerFor(position))
         } else {
-            null
+            super.onBindViewHolder(holder, position, payloads)
         }
-        holder.bind(notification, day)
+    }
+
+    /**
+     * E Ink: "Today" / "Yesterday" / "23 Nov" above the newest message of each day (the list is
+     * newest first), or null for no marker.
+     */
+    private fun dayMarkerFor(position: Int): String? {
+        if (!BuildConfig.E_INK) return null
+        val thisDay = localDate(getItem(position).timestamp)
+        val newerDay = if (position > 0) localDate(getItem(position - 1).timestamp) else null
+        return if (thisDay != newerDay) dayMarkerLabel(thisDay, LocalDate.now(), Locale.getDefault(), systemDayNames()) else null
+    }
+
+    /** Refreshes only the day markers, e.g. at midnight or after a neighbour changed. */
+    fun refreshDayMarkers() {
+        if (itemCount > 0) notifyItemRangeChanged(0, itemCount, DAY_MARKER)
     }
 
     /** Calendar date in the device's time zone, so the same day in different years differs. */
@@ -82,9 +97,10 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
         Instant.ofEpochSecond(timestampSecs).atZone(ZoneId.systemDefault()).toLocalDate()
 
     override fun onCurrentListChanged(previousList: List<Notification>, currentList: List<Notification>) {
-        // E Ink: a message's day marker depends on its neighbour, which DiffUtil doesn't rebind
+        // E Ink: a message's day marker depends on its neighbour, which DiffUtil doesn't rebind;
+        // update just the markers, so unchanged rows keep their rendered content
         if (BuildConfig.E_INK && previousList.isNotEmpty()) {
-            notifyItemRangeChanged(0, currentList.size)
+            refreshDayMarkers()
         }
     }
 
@@ -137,6 +153,14 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
         private val actionsWrapperView: ConstraintLayout = itemView.findViewById(R.id.detail_item_actions_wrapper)
         private val actionsFlow: Flow = itemView.findViewById(R.id.detail_item_actions_flow)
 
+        /** Only the day marker above this message ("•  Today  •"), or none. */
+        fun bindDay(day: String?) {
+            dayView?.let {
+                it.text = if (day != null) "•  $day  •" else ""
+                it.visibility = if (day != null) View.VISIBLE else View.GONE
+            }
+        }
+
         fun bind(notification: Notification, day: String? = null) {
             this.notification = notification
 
@@ -150,10 +174,7 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
                     notification.timestamp * 1000, ZoneId.systemDefault(), Locale.getDefault(),
                     android.text.format.DateFormat.is24HourFormat(context)
                 )
-                dayView?.let {
-                    it.text = if (day != null) "•  $day  •" else ""
-                    it.visibility = if (day != null) View.VISIBLE else View.GONE
-                }
+                bindDay(day)
             } else {
                 dateView.text = formatDateShort(notification.timestamp)
             }
@@ -627,6 +648,8 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
     }
 
     companion object {
+        /** RecyclerView payload: only the day marker needs updating. */
+        private const val DAY_MARKER = "day_marker"
         const val TAG = "NtfyDetailAdapter"
         const val REQUEST_CODE_WRITE_STORAGE_PERMISSION_FOR_DOWNLOAD = 9876
         const val IMAGE_PREVIEW_MAX_BYTES = 5 * 1024 * 1024 // Too large images crash the app with "Canvas: trying to draw too large(233280000bytes) bitmap."
