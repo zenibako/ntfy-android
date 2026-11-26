@@ -70,7 +70,7 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
         val day = if (BuildConfig.E_INK) {
             val thisDay = localDate(notification.timestamp)
             val newerDay = if (position > 0) localDate(getItem(position - 1).timestamp) else null
-            if (thisDay != newerDay) dayMarkerLabel(thisDay, LocalDate.now(), Locale.getDefault()) else null
+            if (thisDay != newerDay) dayMarkerLabel(thisDay, LocalDate.now(), Locale.getDefault(), systemDayNames()) else null
         } else {
             null
         }

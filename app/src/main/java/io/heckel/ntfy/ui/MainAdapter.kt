@@ -18,6 +18,7 @@ import io.heckel.ntfy.db.Repository
 import io.heckel.ntfy.db.Subscription
 import io.heckel.ntfy.util.displayName
 import io.heckel.ntfy.util.listTimeLabel
+import io.heckel.ntfy.util.systemDayNames
 import java.time.LocalDate
 import java.time.ZoneId
 import io.heckel.ntfy.util.readBitmapFromUriOrNull
@@ -108,7 +109,7 @@ class MainAdapter(
                 // Like the Messages app: time today, "Yesterday", "Mon", then "23 Nov"
                 listTimeLabel(
                     subscription.lastActive * 1000, LocalDate.now(), ZoneId.systemDefault(),
-                    Locale.getDefault(), android.text.format.DateFormat.is24HourFormat(context)
+                    Locale.getDefault(), android.text.format.DateFormat.is24HourFormat(context), systemDayNames()
                 )
             } else if (sameDay) {
                 DateFormat.getTimeInstance(DateFormat.SHORT).format(date)

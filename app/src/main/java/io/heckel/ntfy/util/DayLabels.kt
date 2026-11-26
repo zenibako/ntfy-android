@@ -13,6 +13,9 @@ import java.util.Locale
  * timer to keep it right; callers recompute on resume and when the date changes.
  */
 
+/** The words for today and yesterday in the user's language (see [systemDayNames]). */
+data class DayNames(val today: String, val yesterday: String)
+
 /** Calendar day of [epochMillis] in [zone]. */
 fun localDay(epochMillis: Long, zone: ZoneId): LocalDate = Instant.ofEpochMilli(epochMillis).atZone(zone).toLocalDate()
 
@@ -29,19 +32,19 @@ private fun dateLabel(date: LocalDate, today: LocalDate, locale: Locale): String
  * A list row's time: the time today, "Yesterday", the weekday within the last 6 days ("Mon"),
  * then "23 Nov", with the year when it isn't this year. Future dates show their date.
  */
-fun listTimeLabel(epochMillis: Long, today: LocalDate, zone: ZoneId, locale: Locale, use24h: Boolean): String {
+fun listTimeLabel(epochMillis: Long, today: LocalDate, zone: ZoneId, locale: Locale, use24h: Boolean, names: DayNames): String {
     val day = localDay(epochMillis, zone)
     return when (ChronoUnit.DAYS.between(day, today)) {
         0L -> timeOfDayLabel(epochMillis, zone, locale, use24h)
-        1L -> "Yesterday"
+        1L -> names.yesterday
         in 2L..6L -> DateTimeFormatter.ofPattern("EEE", locale).format(day)
         else -> dateLabel(day, today, locale)
     }
 }
 
 /** A chat's day marker: "Today", "Yesterday", else "23 Nov" (with the year when not this year). */
-fun dayMarkerLabel(day: LocalDate, today: LocalDate, locale: Locale): String = when (ChronoUnit.DAYS.between(day, today)) {
-    0L -> "Today"
-    1L -> "Yesterday"
+fun dayMarkerLabel(day: LocalDate, today: LocalDate, locale: Locale, names: DayNames): String = when (ChronoUnit.DAYS.between(day, today)) {
+    0L -> names.today
+    1L -> names.yesterday
     else -> dateLabel(day, today, locale)
 }
