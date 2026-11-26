@@ -41,6 +41,7 @@ import io.heckel.ntfy.msg.ApiService
 import io.heckel.ntfy.msg.NotificationService
 import io.heckel.ntfy.msg.Poller
 import io.heckel.ntfy.service.SubscriberServiceManager
+import io.heckel.ntfy.util.DateChangeWatcher
 import io.heckel.ntfy.util.Log
 import io.heckel.ntfy.util.copyToClipboard
 import io.heckel.ntfy.util.dangerButton
@@ -526,8 +527,19 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
         }
     }
 
+    // E Ink: day markers ("Today", "Yesterday") move on at midnight without a timer
+    private val dateChangeWatcher by lazy { DateChangeWatcher(this) { redrawDays() } }
+
+    private fun redrawDays() {
+        if (this::adapter.isInitialized) adapter.notifyItemRangeChanged(0, adapter.currentList.size)
+    }
+
     override fun onResume() {
         super.onResume()
+        if (BuildConfig.E_INK) {
+            dateChangeWatcher.start()
+            redrawDays()
+        }
 
         // Mark as "open" so we don't send notifications while this is open
         repository.detailViewSubscriptionId.set(subscriptionId)
@@ -545,6 +557,7 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
 
     override fun onPause() {
         super.onPause()
+        if (BuildConfig.E_INK) dateChangeWatcher.stop()
         Log.d(TAG, "onPause hook: Removing 'notificationId' from all notifications for $subscriptionId")
         GlobalScope.launch(Dispatchers.IO) {
             // Note: This is here and not in onDestroy/onStop, because we want to clear notifications as early

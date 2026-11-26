@@ -50,6 +50,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.heckel.ntfy.BuildConfig
 import io.heckel.ntfy.R
 import io.heckel.ntfy.app.Application
+import io.heckel.ntfy.util.DateChangeWatcher
 import io.heckel.ntfy.db.Repository
 import io.heckel.ntfy.db.Subscription
 import io.heckel.ntfy.firebase.FirebaseMessenger
@@ -397,8 +398,17 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
         }
     }
 
+    // E Ink: day-relative times ("Yesterday", "Mon") move on at midnight without a timer
+    private val dateChangeWatcher by lazy { DateChangeWatcher(this) { redrawList() } }
+
+    override fun onPause() {
+        super.onPause()
+        if (BuildConfig.E_INK) dateChangeWatcher.stop()
+    }
+
     override fun onResume() {
         super.onResume()
+        if (BuildConfig.E_INK) dateChangeWatcher.start()
         showHideNotificationMenuItems()
         showHideConnectionErrorMenuItem(repository.getConnectionDetails())
         showHideNoNetworkBanner()

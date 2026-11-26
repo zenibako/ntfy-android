@@ -17,7 +17,9 @@ import io.heckel.ntfy.db.ConnectionState
 import io.heckel.ntfy.db.Repository
 import io.heckel.ntfy.db.Subscription
 import io.heckel.ntfy.util.displayName
-import io.heckel.ntfy.util.formatDay
+import io.heckel.ntfy.util.listTimeLabel
+import java.time.LocalDate
+import java.time.ZoneId
 import io.heckel.ntfy.util.readBitmapFromUriOrNull
 import java.text.DateFormat
 import java.util.*
@@ -102,10 +104,14 @@ class MainAdapter(
             val sameDay = dateStr == DateFormat.getDateInstance(DateFormat.SHORT).format(Date()) // Omg this is horrible
             val dateText = if (subscription.lastActive == 0L) {
                 ""
+            } else if (BuildConfig.E_INK) {
+                // Like the Messages app: time today, "Yesterday", "Mon", then "23 Nov"
+                listTimeLabel(
+                    subscription.lastActive * 1000, LocalDate.now(), ZoneId.systemDefault(),
+                    Locale.getDefault(), android.text.format.DateFormat.is24HourFormat(context)
+                )
             } else if (sameDay) {
                 DateFormat.getTimeInstance(DateFormat.SHORT).format(date)
-            } else if (BuildConfig.E_INK) {
-                formatDay(date) // Like the Messages app: "23 Nov"
             } else if (!moreThanOneDay) {
                 context.getString(R.string.main_item_date_yesterday)
             } else {

@@ -41,6 +41,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
+import java.util.Locale
 import io.noties.markwon.Markwon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,11 +65,12 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
     /* Gets current topic and uses it to bind view. */
     override fun onBindViewHolder(holder: DetailViewHolder, position: Int) {
         val notification = getItem(position)
-        // E Ink: "• 23 Nov •" above the newest message of each day (the list is newest first)
+        // E Ink: "• Today •" / "• Yesterday •" / "• 23 Nov •" above the newest message of each
+        // day (the list is newest first)
         val day = if (BuildConfig.E_INK) {
             val thisDay = localDate(notification.timestamp)
             val newerDay = if (position > 0) localDate(getItem(position - 1).timestamp) else null
-            if (thisDay != newerDay) formatDay(Date(notification.timestamp * 1000)) else null
+            if (thisDay != newerDay) dayMarkerLabel(thisDay, LocalDate.now(), Locale.getDefault()) else null
         } else {
             null
         }
@@ -144,7 +146,10 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
 
             if (BuildConfig.E_INK) {
                 // The day is in the "• 23 Nov •" marker, so only the time goes under the message
-                dateView.text = DateFormat.getTimeInstance(DateFormat.SHORT).format(Date(notification.timestamp * 1000))
+                dateView.text = timeOfDayLabel(
+                    notification.timestamp * 1000, ZoneId.systemDefault(), Locale.getDefault(),
+                    android.text.format.DateFormat.is24HourFormat(context)
+                )
                 dayView?.let {
                     it.text = if (day != null) "•  $day  •" else ""
                     it.visibility = if (day != null) View.VISIBLE else View.GONE
