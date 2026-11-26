@@ -2,4 +2,6 @@
 <resources>
     <!-- Day marker above a message; only the E Ink (kompakt) item layout has this view -->
     <item name="detail_item_day" type="id" />
+    <!-- E Ink (kompakt) build: the ⋮ that opens the menu sheet -->
+    <item name="eink_menu_more" type="id" />
 </resources>

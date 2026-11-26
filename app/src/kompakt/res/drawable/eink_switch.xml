@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Stock kompakt_switch_selector: off is a white pill with a black outline and the knob left;
+     on is a black pill with a white knob right. No animation. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/eink_switch_on" android:state_checked="true" />
+    <item android:drawable="@drawable/eink_switch_off" />
+</selector>

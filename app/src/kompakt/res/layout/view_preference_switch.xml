@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- E Ink: the stock 48 x 30 dp pill switch instead of Material's. SwitchPreferenceCompat
+     sets any Checkable with this id; the row handles the tap, so this only draws. The platform
+     CheckBox, not Material's, so the pill isn't tinted. -->
+<android.widget.CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/switchWidget"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@null"
+    android:button="@drawable/eink_switch"
+    android:clickable="false"
+    android:focusable="false"
+    android:importantForAccessibility="no" />

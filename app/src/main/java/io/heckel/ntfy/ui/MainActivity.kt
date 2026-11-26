@@ -537,6 +537,15 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main_action_bar, menu)
         this.menu = menu
+
+        // E Ink: the overflow items open in the stock bottom sheet from this ⋮, and the popup
+        // overflow button is hidden
+        if (BuildConfig.E_INK) {
+            findViewById<View>(R.id.toolbar)?.let { EInkSheet.hideOverflowButton(it) }
+            menu.add(Menu.NONE, R.id.eink_menu_more, Menu.CATEGORY_SYSTEM, "More options")
+                .setIcon(R.drawable.eink_ic_more_vert)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
         
         // Tint menu icons based on theme
         val toolbarTextColor = Colors.toolbarTextColor(this, repository.getDynamicColorsEnabled(), isDarkThemeOn(this))
@@ -621,6 +630,11 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (BuildConfig.E_INK && item.itemId == R.id.eink_menu_more) {
+            // The overflow items: the ones without an icon in the bar
+            EInkSheet.show(this, "Menu", EInkSheet.menuItems(menu) { it.icon == null }) { onOptionsItemSelected(it) }
+            return true
+        }
         return when (item.itemId) {
             R.id.main_menu_notifications_enabled -> {
                 onNotificationSettingsClick(enable = false)

@@ -270,7 +270,16 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
         private fun maybeRenderMenu(context: Context, notification: Notification, attachmentFileStat: FileInfo?) {
             val menuButtonPopupMenu = maybeCreateMenuPopup(context, menuButton, notification, attachmentFileStat) // Heavy lifting not during on-click
             if (menuButtonPopupMenu != null) {
-                menuButton.setOnClickListener { menuButtonPopupMenu.show() }
+                menuButton.setOnClickListener {
+                    if (BuildConfig.E_INK) {
+                        // E Ink: the stock bottom sheet instead of a popup
+                        EInkSheet.show(context, "Message", EInkSheet.menuItems(menuButtonPopupMenu.menu)) {
+                            menuButtonPopupMenu.menu.performIdentifierAction(it.itemId, 0)
+                        }
+                    } else {
+                        menuButtonPopupMenu.show()
+                    }
+                }
                 menuButton.visibility = View.VISIBLE
             } else {
                 menuButton.visibility = View.GONE
@@ -322,7 +331,15 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
             attachmentIconView.setImageResource(mimeTypeToIconResource(attachment.type))
             val attachmentBoxPopupMenu = maybeCreateMenuPopup(context, attachmentBoxView, notification, attachmentFileStat) // Heavy lifting not during on-click
             if (attachmentBoxPopupMenu != null) {
-                attachmentBoxView.setOnClickListener { attachmentBoxPopupMenu.show() }
+                attachmentBoxView.setOnClickListener {
+                    if (BuildConfig.E_INK) {
+                        EInkSheet.show(context, "Attachment", EInkSheet.menuItems(attachmentBoxPopupMenu.menu)) {
+                            attachmentBoxPopupMenu.menu.performIdentifierAction(it.itemId, 0)
+                        }
+                    } else {
+                        attachmentBoxPopupMenu.show()
+                    }
+                }
             } else {
                 attachmentBoxView.setOnClickListener {
                     Toast

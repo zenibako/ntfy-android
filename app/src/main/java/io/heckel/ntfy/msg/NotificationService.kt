@@ -131,7 +131,8 @@ class NotificationService(val context: Context) {
         val intent = Intent().apply {
             setClassName(context, "io.heckel.ntfy.ui.MaxPriorityAlertActivity")
             putExtra("io.heckel.ntfy.kompakt.ALERT_TITLE", title)
-            putExtra("io.heckel.ntfy.kompakt.ALERT_MESSAGE", notification.message)
+            // Same text as the notification: decoded when the message is base64
+            putExtra("io.heckel.ntfy.kompakt.ALERT_MESSAGE", formatMessage(notification))
             putExtra(MainActivity.EXTRA_SUBSCRIPTION_ID, subscription.id)
             putExtra(MainActivity.EXTRA_SUBSCRIPTION_BASE_URL, subscription.baseUrl)
             putExtra(MainActivity.EXTRA_SUBSCRIPTION_TOPIC, subscription.topic)
