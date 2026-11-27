@@ -21,5 +21,14 @@
             android:taskAffinity=".kompakt.alert"
             android:theme="@style/Theme.Ntfy.EInk.Alert"
             android:turnScreenOn="true" />
+
+        <!-- Updating the app kills the subscriber service, and nothing restarts it until a
+             reboot, an app launch or the 3-hourly worker, so urgent messages would wait. Also
+             run the boot receiver after an update; it refreshes the service for any action. -->
+        <receiver android:name="io.heckel.ntfy.service.SubscriberService$BootStartReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
