@@ -133,6 +133,9 @@ class NotificationService(val context: Context) {
             putExtra("io.heckel.ntfy.kompakt.ALERT_TITLE", title)
             // Same text as the notification: decoded when the message is base64
             putExtra("io.heckel.ntfy.kompakt.ALERT_MESSAGE", formatMessage(notification))
+            // "Open" follows the message's Click URL when it has one (e.g. a chat link), as a tap
+            // on the notification does
+            putExtra("io.heckel.ntfy.kompakt.ALERT_CLICK", notification.click)
             putExtra(MainActivity.EXTRA_SUBSCRIPTION_ID, subscription.id)
             putExtra(MainActivity.EXTRA_SUBSCRIPTION_BASE_URL, subscription.baseUrl)
             putExtra(MainActivity.EXTRA_SUBSCRIPTION_TOPIC, subscription.topic)

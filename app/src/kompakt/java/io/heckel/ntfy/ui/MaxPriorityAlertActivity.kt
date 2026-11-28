@@ -1,6 +1,7 @@
 package io.heckel.ntfy.ui
 
 import android.app.KeyguardManager
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -9,13 +10,16 @@ import android.widget.Button
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import io.heckel.ntfy.R
 import io.heckel.ntfy.db.Repository
+import io.heckel.ntfy.util.clickTarget
 
 /**
  * Full-screen, alarm-style card for max-priority (5) messages on E Ink phones. Static layout,
- * black on white, no animation: one refresh to show it, one to dismiss it. "Open" goes to
- * the topic's message list; the notification itself stays in the shade.
+ * black on white, no animation: one refresh to show it, one to dismiss it. "Open" follows the
+ * message's Click URL when it has one (a link into another app, such as a Hermes chat), else
+ * goes to the topic's message list; the notification itself stays in the shade.
  */
 class MaxPriorityAlertActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,17 +59,31 @@ class MaxPriorityAlertActivity : AppCompatActivity() {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
+    // The Click URL's target, or the topic's messages when there is none or nothing handles it.
+    private fun startTarget() {
+        val click = clickTarget(intent.getStringExtra(EXTRA_CLICK).orEmpty())
+        if (click != null) {
+            try {
+                startActivity(Intent(Intent.ACTION_VIEW, click.toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                return
+            } catch (_: ActivityNotFoundException) {
+                // No app for that link: fall back to the topic
+            }
+        }
+        startActivity(buildDetailIntent())
+    }
+
     private fun open() {
         val keyguard = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && keyguard.isKeyguardLocked) {
             keyguard.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
                 override fun onDismissSucceeded() {
-                    startActivity(buildDetailIntent())
+                    startTarget()
                     finish()
                 }
             })
         } else {
-            startActivity(buildDetailIntent())
+            startTarget()
             finish()
         }
     }
@@ -89,5 +107,6 @@ class MaxPriorityAlertActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_TITLE = "io.heckel.ntfy.kompakt.ALERT_TITLE"
         const val EXTRA_MESSAGE = "io.heckel.ntfy.kompakt.ALERT_MESSAGE"
+        const val EXTRA_CLICK = "io.heckel.ntfy.kompakt.ALERT_CLICK"
     }
 }
