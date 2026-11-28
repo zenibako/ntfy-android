@@ -358,16 +358,16 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
                 override fun putString(key: String?, value: String?) {
                     val darkModeValue = value?.toIntOrNull() ?: return
                     repository.setDarkMode(darkModeValue)
-                    AppCompatDelegate.setDefaultNightMode(darkModeValue)
+                    // Apply the effective mode (E Ink builds always stay light)
+                    AppCompatDelegate.setDefaultNightMode(repository.getDarkMode())
 
                 }
                 override fun getString(key: String?, defValue: String?): String {
                     return repository.getDarkMode().toString()
                 }
             }
-            darkMode?.summaryProvider = Preference.SummaryProvider<ListPreference> { pref ->
-                val darkModeValue = pref.value.toIntOrNull() ?: repository.getDarkMode()
-                when (darkModeValue) {
+            darkMode?.summaryProvider = Preference.SummaryProvider<ListPreference> { _ ->
+                when (repository.getDarkMode()) { // The mode in effect, which E Ink pins to light
                     AppCompatDelegate.MODE_NIGHT_NO -> getString(R.string.settings_general_dark_mode_summary_light)
                     AppCompatDelegate.MODE_NIGHT_YES -> getString(R.string.settings_general_dark_mode_summary_dark)
                     else -> getString(R.string.settings_general_dark_mode_summary_system)
@@ -865,6 +865,11 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
                 getString(R.string.settings_advanced_export_logs_scrub_dialog_text, scrubTerms)
             } else {
                 getString(R.string.settings_advanced_export_logs_scrub_dialog_empty)
+            }
+            if (BuildConfig.E_INK) {
+                // E Ink: an information sheet instead of a dimmed dialog
+                EInkSheet.info(requireContext(), title, scrubbedText, getString(R.string.settings_advanced_export_logs_scrub_dialog_button_ok))
+                return
             }
             val dialog = MaterialAlertDialogBuilder(requireContext())
                 .setTitle(title)

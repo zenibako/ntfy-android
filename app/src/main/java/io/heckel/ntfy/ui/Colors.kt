@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import androidx.core.content.ContextCompat
 import com.google.android.material.color.MaterialColors
+import io.heckel.ntfy.BuildConfig
 import io.heckel.ntfy.R
 import io.heckel.ntfy.util.isDarkThemeOn
 
@@ -47,7 +48,7 @@ class Colors {
 
         fun statusBarNormal(context: Context, dynamicColors: Boolean, darkMode: Boolean): Int {
             val default = context.resources.getColor(R.color.action_bar, null)
-            return if (dynamicColors) {
+            return if (dynamicColors || BuildConfig.E_INK) { // E Ink: white bar, like the Messages app
                 // Use colorSurface for both light and dark mode when dynamic colors are enabled
                 MaterialColors.getColor(context, R.attr.colorSurface, default)
             } else {
@@ -57,11 +58,11 @@ class Colors {
 
         fun shouldUseLightStatusBar(dynamicColors: Boolean, darkMode: Boolean): Boolean {
             // Use light status bar (dark icons) when dynamic colors are enabled in light mode
-            return dynamicColors && !darkMode
+            return (dynamicColors || BuildConfig.E_INK) && !darkMode
         }
 
         fun toolbarTextColor(context: Context, dynamicColors: Boolean, darkMode: Boolean): Int {
-            return if (dynamicColors) {
+            return if (dynamicColors || BuildConfig.E_INK) {
                 // Use colorOnSurface (dark on light, light on dark) when dynamic colors are enabled
                 MaterialColors.getColor(context, R.attr.colorOnSurface, Color.BLACK)
             } else {

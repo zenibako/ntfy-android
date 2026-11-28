@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Selection (action mode) bar: white like the top bar it replaces, with the same thick rule -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@android:color/white" />
+    <item android:gravity="bottom" android:height="@dimen/eink_bar_rule"
+        android:drawable="@android:color/black" />
+</layer-list>

@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  E Ink theme for the Kompakt flavor, mirroring MMD (ThemeMMD / ColorMMD / TypographyMMD):
+  black on white only, Lato at MMD's sizes, no ripples, no window animations, no shadows.
+  Overrides main's AppTheme by name, so layouts and code stay untouched.
+-->
+<resources>
+    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/md_theme_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/md_theme_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/md_theme_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_onTertiaryContainer</item>
+        <item name="colorError">@color/md_theme_error</item>
+        <item name="colorOnError">@color/md_theme_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/md_theme_onErrorContainer</item>
+        <item name="android:colorBackground">@color/md_theme_background</item>
+        <item name="colorOnBackground">@color/md_theme_onBackground</item>
+        <item name="colorSurface">@color/md_theme_surface</item>
+        <item name="colorOnSurface">@color/md_theme_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_onSurfaceVariant</item>
+        <item name="colorOutline">@color/md_theme_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_outlineVariant</item>
+        <item name="colorSurfaceInverse">@color/md_theme_inverseSurface</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_inverseOnSurface</item>
+        <item name="colorPrimaryInverse">@color/md_theme_inversePrimary</item>
+        <item name="colorPrimaryFixed">@color/md_theme_primaryFixed</item>
+        <item name="colorOnPrimaryFixed">@color/md_theme_onPrimaryFixed</item>
+        <item name="colorPrimaryFixedDim">@color/md_theme_primaryFixedDim</item>
+        <item name="colorOnPrimaryFixedVariant">@color/md_theme_onPrimaryFixedVariant</item>
+        <item name="colorSecondaryFixed">@color/md_theme_secondaryFixed</item>
+        <item name="colorOnSecondaryFixed">@color/md_theme_onSecondaryFixed</item>
+        <item name="colorSecondaryFixedDim">@color/md_theme_secondaryFixedDim</item>
+        <item name="colorOnSecondaryFixedVariant">@color/md_theme_onSecondaryFixedVariant</item>
+        <item name="colorTertiaryFixed">@color/md_theme_tertiaryFixed</item>
+        <item name="colorOnTertiaryFixed">@color/md_theme_onTertiaryFixed</item>
+        <item name="colorTertiaryFixedDim">@color/md_theme_tertiaryFixedDim</item>
+        <item name="colorOnTertiaryFixedVariant">@color/md_theme_onTertiaryFixedVariant</item>
+        <item name="colorSurfaceDim">@color/md_theme_surfaceDim</item>
+        <item name="colorSurfaceBright">@color/md_theme_surfaceBright</item>
+        <item name="colorSurfaceContainerLowest">@color/md_theme_surfaceContainerLowest</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
+
+        <item name="switchPreferenceCompatStyle">@style/MaterialSwitch</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="searchViewStyle">@style/AppSearchViewStyle</item>
+
+        <item name="actionModeStyle">@style/ActionMode</item>
+        <item name="actionModeCloseButtonStyle">@style/ActionModeCloseButtonStyle</item>
+        <item name="actionOverflowButtonStyle">@style/OverflowButtonStyle</item>
+
+        <!-- E Ink: a text appearance's textFontWeight is ignored for XML TextViews, so the default
+             TextView style sets Lato Medium (500) and titles set 900 on the view itself -->
+        <item name="android:textViewStyle">@style/EInkTextView</item>
+        <!-- E Ink: Lato everywhere, MMD type scale -->
+        <item name="fontFamily">@font/lato</item>
+        <item name="android:fontFamily">@font/lato</item>
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.EInk.HeadlineLarge</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.EInk.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.EInk.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.EInk.TitleSmall</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.EInk.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.EInk.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.EInk.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.EInk.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.EInk.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.EInk.LabelSmall</item>
+
+        <!-- E Ink: no ripples, no animations, no shadows, crisp dividers -->
+        <item name="colorControlHighlight">@android:color/transparent</item>
+        <item name="android:colorControlHighlight">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowContentTransitions">false</item>
+        <item name="android:windowActivityTransitions">false</item>
+        <item name="elevationOverlayEnabled">false</item>
+        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="materialDividerStyle">@style/EInkDivider</item>
+        <item name="materialCardViewStyle">@style/CardView</item>
+        <!-- E Ink: Messages-style top bar, bold title (colors come from Colors) -->
+        <item name="toolbarStyle">@style/EInkToolbar</item>
+
+        <!-- E Ink: outlined menus without shadow, Messages-style text -->
+        <item name="popupMenuStyle">@style/EInkPopupMenu</item>
+        <item name="android:popupMenuStyle">@style/EInkPopupMenu</item>
+        <item name="actionOverflowMenuStyle">@style/EInkPopupMenu.Overflow</item>
+        <item name="android:actionOverflowMenuStyle">@style/EInkPopupMenu.Overflow</item>
+        <item name="listPopupWindowStyle">@style/EInkPopupMenu.ListPopupWindow</item>
+        <item name="android:listPopupWindowStyle">@style/EInkPopupMenu.ListPopupWindow</item>
+        <item name="textAppearanceLargePopupMenu">@style/TextAppearance.EInk.BodyLarge</item>
+        <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.EInk.BodyLarge</item>
+        <item name="android:textAppearanceLargePopupMenu">@style/TextAppearance.EInk.BodyLarge</item>
+        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.EInk.BodyLarge</item>
+
+        <!-- E Ink: stock settings rows, 64 dp with a 21 sp Medium label over an 18 sp summary.
+             Set on the app theme: the preference overlay doesn't override these. -->
+        <item name="android:listPreferredItemHeightSmall">@dimen/eink_row_height</item>
+        <item name="android:textAppearanceListItem">@style/TextAppearance.EInk.BodyLarge</item>
+        <item name="android:textAppearanceListItemSecondary">@style/TextAppearance.EInk.BodyMedium</item>
+        <item name="preferenceCategoryTitleTextAppearance">@style/TextAppearance.EInk.PreferenceCategory</item>
+        <!-- E Ink: Settings with bold section headers and dashed, inset dividers -->
+        <item name="preferenceTheme">@style/EInkPreferenceTheme</item>
+    </style>
+
+    <!-- Selection (action mode) bar: white with a thick rule, black title and icons -->
+    <style name="ActionMode" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@drawable/eink_action_mode_background</item>
+        <item name="titleTextStyle">@style/ActionModeTitle</item>
+    </style>
+
+    <style name="ActionModeTitle" parent="@style/TextAppearance.AppCompat.Widget.ActionMode.Title">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ActionModeCloseButtonStyle" parent="Widget.AppCompat.ActionButton.CloseMode">
+        <item name="android:tint">@android:color/black</item>
+    </style>
+
+    <style name="EInkPopupMenu" parent="Widget.Material3.PopupMenu">
+        <item name="android:popupBackground">@drawable/eink_popup_background</item>
+        <item name="android:popupElevation">0dp</item>
+        <item name="android:popupEnterTransition">@null</item>
+        <item name="android:popupExitTransition">@null</item>
+        <item name="android:popupAnimationStyle">@null</item>
+    </style>
+    <style name="EInkPopupMenu.Overflow" parent="Widget.Material3.PopupMenu.Overflow">
+        <item name="android:popupBackground">@drawable/eink_popup_background</item>
+        <item name="android:popupElevation">0dp</item>
+        <item name="android:popupEnterTransition">@null</item>
+        <item name="android:popupExitTransition">@null</item>
+        <item name="android:popupAnimationStyle">@null</item>
+    </style>
+    <style name="EInkPopupMenu.ListPopupWindow" parent="Widget.Material3.PopupMenu.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/eink_popup_background</item>
+        <item name="android:popupElevation">0dp</item>
+        <item name="android:popupEnterTransition">@null</item>
+        <item name="android:popupExitTransition">@null</item>
+        <item name="android:popupAnimationStyle">@null</item>
+    </style>
+
+    <style name="EInkTextView" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textFontWeight">500</item>
+    </style>
+
+    <style name="EInkPreferenceTheme" parent="PreferenceThemeOverlay">
+        <item name="preferenceCategoryTitleTextAppearance">@style/TextAppearance.EInk.PreferenceCategory</item>
+        <item name="preferenceFragmentCompatStyle">@style/EInkPreferenceFragment</item>
+        <!-- Rows start at the text inset (no icon column) and allow dividers between them;
+             Material's preference styles only draw one above each category -->
+        <item name="preferenceStyle">@style/EInkPreference</item>
+        <item name="preferenceScreenStyle">@style/EInkPreference.Screen</item>
+        <item name="dialogPreferenceStyle">@style/EInkPreference.Dialog</item>
+        <item name="editTextPreferenceStyle">@style/EInkPreference.EditText</item>
+        <item name="preferenceCategoryStyle">@style/EInkPreference.Category</item>
+    </style>
+    <style name="EInkPreference" parent="Preference.Material">
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">true</item>
+        <item name="allowDividerBelow">true</item>
+    </style>
+    <style name="EInkPreference.Screen" parent="Preference.PreferenceScreen.Material">
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">true</item>
+        <item name="allowDividerBelow">true</item>
+    </style>
+    <style name="EInkPreference.Dialog" parent="Preference.DialogPreference.Material">
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">true</item>
+        <item name="allowDividerBelow">true</item>
+    </style>
+    <style name="EInkPreference.EditText" parent="Preference.DialogPreference.EditTextPreference.Material">
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">true</item>
+        <item name="allowDividerBelow">true</item>
+    </style>
+    <!-- Replaces main's MaterialSwitch: AppTheme sets switchPreferenceCompatStyle itself, which
+         the preference theme overlay does not override -->
+    <style name="MaterialSwitch" parent="@style/Preference.SwitchPreferenceCompat.Material">
+        <item name="widgetLayout">@layout/view_preference_switch</item>
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">true</item>
+        <item name="allowDividerBelow">true</item>
+    </style>
+    <style name="EInkPreference.Category" parent="Preference.Category.Material">
+        <item name="android:layout">@layout/eink_preference_category</item>
+        <item name="layout">@layout/eink_preference_category</item>
+        <item name="iconSpaceReserved">false</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
+    <style name="EInkPreferenceFragment" parent="PreferenceFragment.Material">
+        <item name="android:divider">@drawable/eink_preference_divider</item>
+        <item name="android:dividerHeight">2dp</item>
+        <item name="allowDividerAfterLastItem">false</item>
+    </style>
+    <style name="TextAppearance.EInk.PreferenceCategory" parent="TextAppearance.EInk.TitleSmall">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="EInkToolbar" parent="Widget.Material3.Toolbar">
+        <item name="titleTextAppearance">@style/TextAppearance.EInk.ToolbarTitle</item>
+    </style>
+    <style name="TextAppearance.EInk.ToolbarTitle" parent="TextAppearance.EInk.TitleLarge">
+        <item name="fontFamily">@font/lato</item>
+        <item name="android:fontFamily">@font/lato</item>
+    </style>
+
+    <style name="TextAppearance.EInk.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textSize">36sp</item>
+        <item name="android:lineHeight">40sp</item>
+        <item name="android:textFontWeight">900</item>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/lato</item>
+        <item name="android:fontFamily">@font/lato</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+    <style name="TextAppearance.EInk.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">25sp</item>
+        <item name="android:lineHeight">28sp</item>
+        <item name="android:textFontWeight">900</item>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/lato</item>
+        <item name="android:fontFamily">@font/lato</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+    <style name="TextAppearance.EInk.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">23sp</item>
+        <item name="android:lineHeight">25sp</item>
+        <item name="android:textFontWeight">900</item>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/lato</item>
+        <item name="android:fontFamily">@font/lato</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+    <style name="TextAppearance.EInk.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:textSize">21sp</item>
+        <item name="android:lineHeight">25sp</item>
+        <item name="android:textFontWeight">900</item>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/lato</item>
+        <item name="android:fontFamily">@font/lato</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+    <style name="TextAppearance.EInk.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">21sp</item>
+        <item name="android:lineHeight">25sp</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/lato</item>
+        <item name="android:fontFamily">@font/lato</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+    <style name="TextAppearance.EInk.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">18sp</item>
+        <item name="android:lineHeight">22sp</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/lato</item>
+        <item name="android:fontFamily">@font/lato</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+    <style name="TextAppearance.EInk.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">15sp</item>
+        <item name="android:lineHeight">18sp</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/lato</item>
+        <item name="android:fontFamily">@font/lato</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+    <style name="TextAppearance.EInk.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">21sp</item>
+        <item name="android:lineHeight">23sp</item>
+        <item name="android:textFontWeight">900</item>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/lato</item>
+        <item name="android:fontFamily">@font/lato</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+    <style name="TextAppearance.EInk.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">18sp</item>
+        <item name="android:lineHeight">22sp</item>
+        <item name="android:textFontWeight">900</item>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/lato</item>
+        <item name="android:fontFamily">@font/lato</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+    <style name="TextAppearance.EInk.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">15sp</item>
+        <item name="android:lineHeight">15sp</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/lato</item>
+        <item name="android:fontFamily">@font/lato</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="EInkDivider" parent="Widget.Material3.MaterialDivider">
+        <item name="dividerThickness">1dp</item>
+        <item name="dividerColor">@android:color/black</item>
+    </style>
+
+    <!-- Flat cards with a 1dp black outline; message cards draw theirs as a foreground. -->
+    <style name="CardView" parent="@style/Widget.Material3.CardView.Outlined">
+        <item name="strokeColor">@android:color/black</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cardElevation">0dp</item>
+    </style>
+
+    <!-- Message cards: white on white, drawn as an outlined Messages-style bubble,
+         with a 3dp outline when selected (see eink_list_divider) -->
+    <style name="DetailCardView" parent="CardView">
+        <item name="android:foreground">@drawable/eink_list_divider</item>
+        <item name="cardCornerRadius">0dp</item>
+    </style>
+
+    <style name="BannerCardStyle" parent="Widget.Material3.CardView.Outlined">
+        <item name="shapeAppearanceOverlay">@style/BannerShapeAppearance</item>
+        <item name="strokeColor">@android:color/black</item>
+        <item name="cardElevation">0dp</item>
+    </style>
+
+    <style name="FloatingActionButton" parent="@style/Widget.Material3.FloatingActionButton.Primary">
+        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="tint">?attr/colorOnPrimary</item>
+        <item name="elevation">0dp</item>
+        <item name="pressedTranslationZ">0dp</item>
+        <item name="hoveredFocusedTranslationZ">0dp</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <!-- Messages' new-message button: a filled black rounded square, not a circle -->
+        <item name="shapeAppearanceOverlay">@style/EInkFabShape</item>
+    </style>
+    <style name="EInkFabShape" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <!-- Full-screen dialogs appear without the slide animation -->
+    <style name="Animation.App.FullScreenDialog" parent="">
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
+    </style>
+
+    <!-- Full-screen max-priority alert: static, black on white -->
+    <style name="Theme.Ntfy.EInk.Alert" parent="AppTheme">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowShowWallpaper">false</item>
+    </style>
+</resources>

@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.stfalcon.imageviewer.StfalconImageViewer
+import io.heckel.ntfy.BuildConfig
 import io.heckel.ntfy.R
 import io.heckel.ntfy.db.*
 import io.heckel.ntfy.msg.DownloadAttachmentWorker
@@ -35,6 +36,12 @@ import io.heckel.ntfy.msg.NotificationService
 import io.heckel.ntfy.msg.NotificationService.Companion.ACTION_COPY
 import io.heckel.ntfy.msg.NotificationService.Companion.ACTION_VIEW
 import io.heckel.ntfy.util.*
+import java.text.DateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.Date
+import java.util.Locale
 import io.noties.markwon.Markwon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +64,44 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
 
     /* Gets current topic and uses it to bind view. */
     override fun onBindViewHolder(holder: DetailViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), dayMarkerFor(position))
+    }
+
+    // A day-marker-only update (see DAY_MARKER) skips the full bind: no markdown, bitmaps or menus.
+    override fun onBindViewHolder(holder: DetailViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isNotEmpty() && payloads.all { it == DAY_MARKER }) {
+            holder.bindDay(dayMarkerFor(position))
+        } else {
+            super.onBindViewHolder(holder, position, payloads)
+        }
+    }
+
+    /**
+     * E Ink: "Today" / "Yesterday" / "23 Nov" above the newest message of each day (the list is
+     * newest first), or null for no marker.
+     */
+    private fun dayMarkerFor(position: Int): String? {
+        if (!BuildConfig.E_INK) return null
+        val thisDay = localDate(getItem(position).timestamp)
+        val newerDay = if (position > 0) localDate(getItem(position - 1).timestamp) else null
+        return if (thisDay != newerDay) dayMarkerLabel(thisDay, LocalDate.now(), Locale.getDefault(), systemDayNames()) else null
+    }
+
+    /** Refreshes only the day markers, e.g. at midnight or after a neighbour changed. */
+    fun refreshDayMarkers() {
+        if (itemCount > 0) notifyItemRangeChanged(0, itemCount, DAY_MARKER)
+    }
+
+    /** Calendar date in the device's time zone, so the same day in different years differs. */
+    private fun localDate(timestampSecs: Long): LocalDate =
+        Instant.ofEpochSecond(timestampSecs).atZone(ZoneId.systemDefault()).toLocalDate()
+
+    override fun onCurrentListChanged(previousList: List<Notification>, currentList: List<Notification>) {
+        // E Ink: a message's day marker depends on its neighbour, which DiffUtil doesn't rebind;
+        // update just the markers, so unchanged rows keep their rendered content
+        if (BuildConfig.E_INK && previousList.isNotEmpty()) {
+            refreshDayMarkers()
+        }
     }
 
     fun get(position: Int): Notification {
@@ -95,6 +139,7 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
         private val cardView: CardView = itemView.findViewById(R.id.detail_item_card)
         private val priorityImageView: ImageView = itemView.findViewById(R.id.detail_item_priority_image)
         private val dateView: TextView = itemView.findViewById(R.id.detail_item_date_text)
+        private val dayView: TextView? = itemView.findViewById(R.id.detail_item_day) // E Ink layout only
         private val titleView: TextView = itemView.findViewById(R.id.detail_item_title_text)
         private val messageView: TextView = itemView.findViewById(R.id.detail_item_message_text)
         private val iconView: ImageView = itemView.findViewById(R.id.detail_item_icon)
@@ -108,14 +153,31 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
         private val actionsWrapperView: ConstraintLayout = itemView.findViewById(R.id.detail_item_actions_wrapper)
         private val actionsFlow: Flow = itemView.findViewById(R.id.detail_item_actions_flow)
 
-        fun bind(notification: Notification) {
+        /** Only the day marker above this message ("•  Today  •"), or none. */
+        fun bindDay(day: String?) {
+            dayView?.let {
+                it.text = if (day != null) "•  $day  •" else ""
+                it.visibility = if (day != null) View.VISIBLE else View.GONE
+            }
+        }
+
+        fun bind(notification: Notification, day: String? = null) {
             this.notification = notification
 
             val context = itemView.context
             val unmatchedTags = unmatchedTags(splitTags(notification.tags))
             val message = maybeAppendActionErrors(formatMessage(notification), notification)
 
-            dateView.text = formatDateShort(notification.timestamp)
+            if (BuildConfig.E_INK) {
+                // The day is in the "• 23 Nov •" marker, so only the time goes under the message
+                dateView.text = timeOfDayLabel(
+                    notification.timestamp * 1000, ZoneId.systemDefault(), Locale.getDefault(),
+                    android.text.format.DateFormat.is24HourFormat(context)
+                )
+                bindDay(day)
+            } else {
+                dateView.text = formatDateShort(notification.timestamp)
+            }
             if (notification.isMarkdown()) {
                 messageView.autoLinkMask = 0
                 markwon.setMarkdown(messageView, message.toString())
@@ -155,6 +217,7 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
             } else {
                 cardView.setCardBackgroundColor(Colors.cardBackgroundColor(context))
             }
+            cardView.isActivated = selected.contains(notification.id) // lets themes style selection
             val attachment = notification.attachment
             val attachmentFileStat = maybeFileStat(context, attachment?.contentUri)
             val iconFileStat = maybeFileStat(context, notification.icon?.contentUri)
@@ -228,7 +291,16 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
         private fun maybeRenderMenu(context: Context, notification: Notification, attachmentFileStat: FileInfo?) {
             val menuButtonPopupMenu = maybeCreateMenuPopup(context, menuButton, notification, attachmentFileStat) // Heavy lifting not during on-click
             if (menuButtonPopupMenu != null) {
-                menuButton.setOnClickListener { menuButtonPopupMenu.show() }
+                menuButton.setOnClickListener {
+                    if (BuildConfig.E_INK) {
+                        // E Ink: the stock bottom sheet instead of a popup
+                        EInkSheet.show(context, "Message", EInkSheet.menuItems(menuButtonPopupMenu.menu)) {
+                            menuButtonPopupMenu.menu.performIdentifierAction(it.itemId, 0)
+                        }
+                    } else {
+                        menuButtonPopupMenu.show()
+                    }
+                }
                 menuButton.visibility = View.VISIBLE
             } else {
                 menuButton.visibility = View.GONE
@@ -280,7 +352,15 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
             attachmentIconView.setImageResource(mimeTypeToIconResource(attachment.type))
             val attachmentBoxPopupMenu = maybeCreateMenuPopup(context, attachmentBoxView, notification, attachmentFileStat) // Heavy lifting not during on-click
             if (attachmentBoxPopupMenu != null) {
-                attachmentBoxView.setOnClickListener { attachmentBoxPopupMenu.show() }
+                attachmentBoxView.setOnClickListener {
+                    if (BuildConfig.E_INK) {
+                        EInkSheet.show(context, "Attachment", EInkSheet.menuItems(attachmentBoxPopupMenu.menu)) {
+                            attachmentBoxPopupMenu.menu.performIdentifierAction(it.itemId, 0)
+                        }
+                    } else {
+                        attachmentBoxPopupMenu.show()
+                    }
+                }
             } else {
                 attachmentBoxView.setOnClickListener {
                     Toast
@@ -568,6 +648,8 @@ class DetailAdapter(private val activity: Activity, private val lifecycleScope: 
     }
 
     companion object {
+        /** RecyclerView payload: only the day marker needs updating. */
+        private const val DAY_MARKER = "day_marker"
         const val TAG = "NtfyDetailAdapter"
         const val REQUEST_CODE_WRITE_STORAGE_PERMISSION_FOR_DOWNLOAD = 9876
         const val IMAGE_PREVIEW_MAX_BYTES = 5 * 1024 * 1024 // Too large images crash the app with "Canvas: trying to draw too large(233280000bytes) bitmap."

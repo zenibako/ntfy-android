@@ -4,9 +4,11 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.widget.RadioButton
+import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import io.heckel.ntfy.BuildConfig
 import io.heckel.ntfy.R
 import io.heckel.ntfy.db.Repository
 import kotlinx.coroutines.Dispatchers
@@ -74,6 +76,12 @@ class NotificationFragment : DialogFragment() {
         muteForeverButton = view.findViewById(R.id.notification_dialog_forever)
         muteForeverButton.setOnClickListener{ onClick(Repository.MUTED_UNTIL_FOREVER) }
 
+        if (BuildConfig.E_INK) {
+            // E Ink: the stock choice sheet; each option runs the matching button's handler
+            val options = listOf(muteFor30minButton, muteFor1hButton, muteFor2hButton, muteFor8hButton, muteUntilTomorrowButton, muteForeverButton)
+            val title = view.findViewById<TextView>(R.id.notification_dialog_title).text.toString()
+            return EInkSheet.choiceDialog(requireContext(), title, options.map { it.text.toString() }, -1) { options[it].performClick() }
+        }
         return MaterialAlertDialogBuilder(requireContext())
             .setView(view)
             .create()

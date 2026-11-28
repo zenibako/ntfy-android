@@ -22,6 +22,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import io.heckel.ntfy.BuildConfig
 import io.heckel.ntfy.R
 import io.heckel.ntfy.db.ACTION_PROGRESS_FAILED
 import io.heckel.ntfy.db.ACTION_PROGRESS_ONGOING
@@ -175,8 +176,11 @@ fun toEmoji(tag: String): String? {
 }
 
 fun unmatchedTags(tags: List<String>): List<String> {
-    return tags.filter { tag -> toEmoji(tag) == null }
+    return tags.filter { tag -> toEmoji(tag) == null && tag !in hiddenTags }
 }
+
+// Per build flavor; empty except in builds that hide bookkeeping tags (see build.gradle)
+private val hiddenTags = BuildConfig.HIDDEN_TAGS.split(",").filter { it.isNotBlank() }.toSet()
 
 /**
  * Prepend tags/emojis to message, but only if there is a non-empty title.

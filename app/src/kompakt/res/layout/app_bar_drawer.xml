@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- E Ink top bar, like the Kompakt's Messages app: white, bold title, black icons
+     (see Colors), closed by a thick black rule. No lift, elevation or layout animation. -->
+<com.google.android.material.appbar.AppBarLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:fitsSystemWindows="true"
+    android:stateListAnimator="@null"
+    app:elevation="0dp"
+    app:liftOnScroll="false">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/eink_bar_rule"
+        android:background="@android:color/black" />
+
+</com.google.android.material.appbar.AppBarLayout>

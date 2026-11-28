@@ -41,6 +41,7 @@ import io.heckel.ntfy.msg.ApiService
 import io.heckel.ntfy.msg.NotificationService
 import io.heckel.ntfy.msg.Poller
 import io.heckel.ntfy.service.SubscriberServiceManager
+import io.heckel.ntfy.util.DateChangeWatcher
 import io.heckel.ntfy.util.Log
 import io.heckel.ntfy.util.copyToClipboard
 import io.heckel.ntfy.util.dangerButton
@@ -526,8 +527,19 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
         }
     }
 
+    // E Ink: day markers ("Today", "Yesterday") move on at midnight without a timer
+    private val dateChangeWatcher by lazy { DateChangeWatcher(this) { redrawDays() } }
+
+    private fun redrawDays() {
+        if (this::adapter.isInitialized) adapter.refreshDayMarkers()
+    }
+
     override fun onResume() {
         super.onResume()
+        if (BuildConfig.E_INK) {
+            dateChangeWatcher.start()
+            redrawDays()
+        }
 
         // Mark as "open" so we don't send notifications while this is open
         repository.detailViewSubscriptionId.set(subscriptionId)
@@ -545,6 +557,7 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
 
     override fun onPause() {
         super.onPause()
+        if (BuildConfig.E_INK) dateChangeWatcher.stop()
         Log.d(TAG, "onPause hook: Removing 'notificationId' from all notifications for $subscriptionId")
         GlobalScope.launch(Dispatchers.IO) {
             // Note: This is here and not in onDestroy/onStop, because we want to clear notifications as early
@@ -570,6 +583,15 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_detail_action_bar, menu)
         this.menu = menu
+
+        // E Ink: the overflow items open in the stock bottom sheet from this ⋮, and the popup
+        // overflow button is hidden
+        if (BuildConfig.E_INK) {
+            findViewById<View>(R.id.toolbar)?.let { EInkSheet.hideOverflowButton(it) }
+            menu.add(Menu.NONE, R.id.eink_menu_more, Menu.CATEGORY_SYSTEM, "More options")
+                .setIcon(R.drawable.eink_ic_more_vert)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
         
         setupSearchView()
         showHideMenuItems()
@@ -678,6 +700,11 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (BuildConfig.E_INK && item.itemId == R.id.eink_menu_more) {
+            // The overflow items: the ones without an icon in the bar
+            EInkSheet.show(this, "Menu", EInkSheet.menuItems(menu) { it.icon == null }) { onOptionsItemSelected(it) }
+            return true
+        }
         return when (item.itemId) {
             R.id.detail_menu_test -> {
                 onTestClick()
@@ -878,6 +905,21 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
     private fun onClearClick() {
         Log.d(TAG, "Clearing all notifications for ${topicShortUrl(subscriptionBaseUrl, subscriptionTopic)}")
 
+        if (BuildConfig.E_INK) {
+            // E Ink: the stock confirm sheet (filled action, outlined Cancel, no dim)
+            EInkSheet.confirm(
+                this,
+                question = getString(R.string.detail_clear_dialog_message),
+                actionLabel = getString(R.string.detail_clear_dialog_permanently_delete),
+                cancelLabel = getString(R.string.detail_clear_dialog_cancel),
+                onConfirm = {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        repository.markAllAsDeleted(subscriptionId)
+                    }
+                },
+            )
+            return
+        }
         val dialog = MaterialAlertDialogBuilder(this)
             .setMessage(R.string.detail_clear_dialog_message)
             .setPositiveButton(R.string.detail_clear_dialog_permanently_delete) { _, _ ->
@@ -909,6 +951,27 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
     private fun onDeleteClick() {
         Log.d(TAG, "Deleting subscription ${topicShortUrl(subscriptionBaseUrl, subscriptionTopic)}")
 
+        if (BuildConfig.E_INK) {
+            // E Ink: the stock confirm sheet (filled action, outlined Cancel, no dim)
+            EInkSheet.confirm(
+                this,
+                question = getString(R.string.detail_delete_dialog_message),
+                actionLabel = getString(R.string.detail_delete_dialog_permanently_delete),
+                cancelLabel = getString(R.string.detail_delete_dialog_cancel),
+                onConfirm = {
+                    Log.d(TAG, "Deleting subscription with subscription ID $subscriptionId (topic: $subscriptionTopic)")
+                    GlobalScope.launch(Dispatchers.IO) {
+                        val subscription = repository.getSubscription(subscriptionId) ?: return@launch
+                        repository.removeSubscription(subscription)
+                        if (subscriptionBaseUrl == appBaseUrl) {
+                            messenger.unsubscribe(subscriptionTopic)
+                        }
+                    }
+                    finish()
+                },
+            )
+            return
+        }
         val dialog = MaterialAlertDialogBuilder(this)
             .setMessage(R.string.detail_delete_dialog_message)
             .setPositiveButton(R.string.detail_delete_dialog_permanently_delete) { _, _ ->
@@ -986,6 +1049,21 @@ class DetailActivity : AppCompatActivity(), NotificationFragment.NotificationSet
     private fun onMultiDeleteClick() {
         Log.d(TAG, "Showing multi-delete dialog for selected items")
 
+        if (BuildConfig.E_INK) {
+            // E Ink: the stock confirm sheet (filled action, outlined Cancel, no dim)
+            EInkSheet.confirm(
+                this,
+                question = getString(R.string.detail_action_mode_delete_dialog_message),
+                actionLabel = getString(R.string.detail_action_mode_delete_dialog_permanently_delete),
+                cancelLabel = getString(R.string.detail_action_mode_delete_dialog_cancel),
+                onConfirm = {
+                    adapter.selected.map { notificationId -> viewModel.markAsDeleted(notificationId) }
+                    finishActionMode()
+                },
+                onCancel = { finishActionMode() },
+            )
+            return
+        }
         val dialog = MaterialAlertDialogBuilder(this)
             .setMessage(R.string.detail_action_mode_delete_dialog_message)
             .setPositiveButton(R.string.detail_action_mode_delete_dialog_permanently_delete) { _, _ ->

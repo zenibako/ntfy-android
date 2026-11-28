@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- E Ink: flat message cards; shadows render as gray smudges -->
+    <dimen name="detail_card_elevation">0dp</dimen>
+    <!-- Rule under the top bar, as thick as the Messages app's -->
+    <dimen name="eink_bar_rule">3dp</dimen>
+    <!-- Row text inset in lists, shared by the rows and their dashed dividers -->
+    <dimen name="eink_row_inset_start">16dp</dimen>
+    <dimen name="eink_row_inset_end">12dp</dimen>
+    <!-- Stock heights: 72 dp message-list rows, 64 dp settings rows -->
+    <dimen name="eink_conversation_row_height">72dp</dimen>
+    <dimen name="eink_row_height">64dp</dimen>
+</resources>

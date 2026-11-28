@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Send button: a 3dp outline while it has keyboard focus (static, no animation) -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/eink_send_button_focused" android:state_focused="true" />
+    <item android:drawable="@drawable/eink_send_button_normal" />
+</selector>

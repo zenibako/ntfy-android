@@ -50,6 +50,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.heckel.ntfy.BuildConfig
 import io.heckel.ntfy.R
 import io.heckel.ntfy.app.Application
+import io.heckel.ntfy.util.DateChangeWatcher
 import io.heckel.ntfy.db.Repository
 import io.heckel.ntfy.db.Subscription
 import io.heckel.ntfy.firebase.FirebaseMessenger
@@ -397,8 +398,17 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
         }
     }
 
+    // E Ink: day-relative times ("Yesterday", "Mon") move on at midnight without a timer
+    private val dateChangeWatcher by lazy { DateChangeWatcher(this) { redrawList() } }
+
+    override fun onPause() {
+        super.onPause()
+        if (BuildConfig.E_INK) dateChangeWatcher.stop()
+    }
+
     override fun onResume() {
         super.onResume()
+        if (BuildConfig.E_INK) dateChangeWatcher.start()
         showHideNotificationMenuItems()
         showHideConnectionErrorMenuItem(repository.getConnectionDetails())
         showHideNoNetworkBanner()
@@ -527,6 +537,15 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main_action_bar, menu)
         this.menu = menu
+
+        // E Ink: the overflow items open in the stock bottom sheet from this ⋮, and the popup
+        // overflow button is hidden
+        if (BuildConfig.E_INK) {
+            findViewById<View>(R.id.toolbar)?.let { EInkSheet.hideOverflowButton(it) }
+            menu.add(Menu.NONE, R.id.eink_menu_more, Menu.CATEGORY_SYSTEM, "More options")
+                .setIcon(R.drawable.eink_ic_more_vert)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
         
         // Tint menu icons based on theme
         val toolbarTextColor = Colors.toolbarTextColor(this, repository.getDynamicColorsEnabled(), isDarkThemeOn(this))
@@ -611,6 +630,11 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (BuildConfig.E_INK && item.itemId == R.id.eink_menu_more) {
+            // The overflow items: the ones without an icon in the bar
+            EInkSheet.show(this, "Menu", EInkSheet.menuItems(menu) { it.icon == null }) { onOptionsItemSelected(it) }
+            return true
+        }
         return when (item.itemId) {
             R.id.main_menu_notifications_enabled -> {
                 onNotificationSettingsClick(enable = false)
@@ -834,6 +858,21 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
     private fun onMultiDeleteClick() {
         Log.d(DetailActivity.TAG, "Showing multi-delete dialog for selected items")
 
+        if (BuildConfig.E_INK) {
+            // E Ink: the stock confirm sheet (filled action, outlined Cancel, no dim)
+            EInkSheet.confirm(
+                this,
+                question = getString(R.string.main_action_mode_delete_dialog_message),
+                actionLabel = getString(R.string.main_action_mode_delete_dialog_permanently_delete),
+                cancelLabel = getString(R.string.main_action_mode_delete_dialog_cancel),
+                onConfirm = {
+                    adapter.selected.map { subscriptionId -> viewModel.remove(this, subscriptionId) }
+                    finishActionMode()
+                },
+                onCancel = { finishActionMode() },
+            )
+            return
+        }
         val dialog = MaterialAlertDialogBuilder(this)
             .setMessage(R.string.main_action_mode_delete_dialog_message)
             .setPositiveButton(R.string.main_action_mode_delete_dialog_permanently_delete) { _, _ ->
@@ -940,7 +979,7 @@ class MainActivity : AppCompatActivity(), AddFragment.SubscribeListener, Notific
         const val EXTRA_SUBSCRIPTION_DISPLAY_NAME = "subscriptionDisplayName"
         const val EXTRA_SUBSCRIPTION_INSTANT = "subscriptionInstant"
         const val EXTRA_SUBSCRIPTION_MUTED_UNTIL = "subscriptionMutedUntil"
-        const val ANIMATION_DURATION = 80L
+        val ANIMATION_DURATION = if (BuildConfig.E_INK) 0L else 80L // E Ink: no fades
         const val ONE_DAY_MILLIS = 86400000L
 
         // As per documentation: The minimum repeat interval that can be defined is 15 minutes
